@@ -86,7 +86,8 @@ function runSetupCommands() {
     "bun add canvas-confetti@^1.9.3",
     "bun install react-markdown remark-gfm rehype-highlight file-saver canvas-confetti @tailwindcss/typography",
     "bun add pdfjs-dist mammoth",
-    "bun install pdfjs-dist mammoth"
+    "bun install pdfjs-dist mammoth",
+    "bun add zod react-hook-form @hookform/resolvers"
 ];
     
     if (commands.length === 0) {
