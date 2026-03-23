@@ -84,7 +84,8 @@ function runSetupCommands() {
     "bun add file-saver@^2.0.5",
     "bun add @tailwindcss/typography@^0.5.13",
     "bun add canvas-confetti@^1.9.3",
-    "bun install react-markdown remark-gfm rehype-highlight file-saver canvas-confetti @tailwindcss/typography"
+    "bun install react-markdown remark-gfm rehype-highlight file-saver canvas-confetti @tailwindcss/typography",
+    "bun add pdfjs-dist mammoth"
 ];
     
     if (commands.length === 0) {
