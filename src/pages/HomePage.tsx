@@ -1,138 +1,109 @@
-// Home page of the app.
-// Currently a demo placeholder "please wait" screen.
-// Replace this file with your actual app UI. Do not delete it to use some other file as homepage. Simply replace the entire contents of this file.
-
-import { useEffect, useMemo, useState } from 'react'
-import { Sparkles } from 'lucide-react'
-
-import { ThemeToggle } from '@/components/ThemeToggle'
-import { HAS_TEMPLATE_DEMO, TemplateDemo } from '@/components/TemplateDemo'
-import { Button } from '@/components/ui/button'
-import { Toaster, toast } from '@/components/ui/sonner'
-
-function formatDuration(ms: number): string {
-  const total = Math.max(0, Math.floor(ms / 1000))
-  const m = Math.floor(total / 60)
-  const s = total % 60
-  return `${m}:${s.toString().padStart(2, '0')}`
-}
-
+import React, { useState } from 'react';
+import { ForgeForm } from '@/components/ForgeForm';
+import { GuideViewer } from '@/components/GuideViewer';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { buildPedagogicalPrompt } from '@/lib/prompt-builder';
+import { generateGuide } from '@/lib/generation-service';
+import { Hammer, Sparkles, AlertCircle } from 'lucide-react';
+import { toast, Toaster } from 'sonner';
+import confetti from 'canvas-confetti';
 export function HomePage() {
-  const [coins, setCoins] = useState(0)
-  const [isRunning, setIsRunning] = useState(false)
-  const [startedAt, setStartedAt] = useState<number | null>(null)
-  const [elapsedMs, setElapsedMs] = useState(0)
-
-  useEffect(() => {
-    if (!isRunning || startedAt === null) return
-
-    const t = setInterval(() => {
-      setElapsedMs(Date.now() - startedAt)
-    }, 250)
-
-    return () => clearInterval(t)
-  }, [isRunning, startedAt])
-
-  const formatted = useMemo(() => formatDuration(elapsedMs), [elapsedMs])
-
-  const onPleaseWait = () => {
-    setCoins((c) => c + 1)
-
-    if (!isRunning) {
-      // Resume from the current elapsed time
-      setStartedAt(Date.now() - elapsedMs)
-      setIsRunning(true)
-      toast.success('Building your app…', {
-        description: "Hang tight — we're setting everything up.",
-      })
-      return
+  const [topic, setTopic] = useState('');
+  const [chapter, setChapter] = useState('');
+  const [level, setLevel] = useState('Beginner');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [streamContent, setStreamContent] = useState('');
+  const handleForge = async () => {
+    if (!topic || !chapter) return;
+    setIsGenerating(true);
+    setStreamContent('');
+    const prompt = buildPedagogicalPrompt(topic, chapter, level);
+    try {
+      await generateGuide(prompt, (chunk) => {
+        setStreamContent(prev => prev + chunk);
+      });
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#F38020', '#764ba2', '#ffffff']
+      });
+      toast.success('Guide successfully forged!');
+    } catch (error) {
+      console.error(error);
+      toast.error('The furnace went cold. Failed to forge guide.');
+    } finally {
+      setIsGenerating(false);
     }
-
-    setIsRunning(false)
-    toast.info('Still working…', {
-      description: 'You can come back in a moment.',
-    })
-  }
-
-  const onReset = () => {
-    setCoins(0)
-    setIsRunning(false)
-    setStartedAt(null)
-    setElapsedMs(0)
-    toast('Reset complete')
-  }
-
-  const onAddCoin = () => {
-    setCoins((c) => c + 1)
-    toast('Coin added')
-  }
-
+  };
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background text-foreground p-4 overflow-hidden relative">
+    <div className="min-h-screen bg-background relative selection:bg-primary/20">
+      <Toaster richColors />
       <ThemeToggle />
-      <div className="absolute inset-0 bg-gradient-rainbow opacity-10 dark:opacity-20 pointer-events-none" />
-
-      <div className="text-center space-y-8 relative z-10 animate-fade-in w-full">
-        <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-primary flex items-center justify-center shadow-primary floating">
-            <Sparkles className="w-8 h-8 text-white rotating" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-8 md:py-10 lg:py-12">
+          {/* Header */}
+          <header className="mb-12 text-center lg:text-left flex flex-col lg:flex-row items-center gap-6">
+            <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center shadow-illustrative rotate-3 border-2 border-foreground shrink-0">
+              <Hammer className="text-white w-10 h-10 -rotate-12" />
+            </div>
+            <div>
+              <h1 className="text-5xl md:text-6xl font-display text-foreground tracking-tight">
+                Practice<span className="text-primary">Forge</span> AI
+              </h1>
+              <p className="text-muted-foreground text-lg max-w-2xl">
+                Turning raw curiosity into structured mastery through illustrative practice guides.
+              </p>
+            </div>
+          </header>
+          {/* Main Layout */}
+          <div className="flex flex-col lg:flex-row gap-10">
+            {/* Sidebar Form */}
+            <aside className="w-full lg:w-96 flex-shrink-0">
+              <div className="sticky top-12">
+                <ForgeForm
+                  topic={topic}
+                  setTopic={setTopic}
+                  chapter={chapter}
+                  setChapter={setChapter}
+                  level={level}
+                  setLevel={setLevel}
+                  onForge={handleForge}
+                  isGenerating={isGenerating}
+                />
+                <div className="mt-8 p-4 border-2 border-dashed border-muted rounded-xl bg-muted/10">
+                  <h4 className="flex items-center gap-2 font-bold text-sm mb-2">
+                    <AlertCircle size={14} className="text-primary" /> Note on Generation
+                  </h4>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Although this project has AI capabilities, there is a limit on the number of requests that can be made to the AI servers across all user apps in a given time period. For best results, configure an OpenRouter API key in settings.
+                  </p>
+                </div>
+              </div>
+            </aside>
+            {/* Main Content Viewer */}
+            <main className="flex-1 min-h-[600px] lg:min-h-[auto]">
+              {isGenerating && !streamContent ? (
+                <div className="sketchy-card h-full flex flex-col items-center justify-center space-y-4 py-32">
+                  <div className="relative">
+                    <Hammer className="w-16 h-16 text-primary animate-bounce" />
+                    <Sparkles className="w-8 h-8 text-secondary absolute -top-4 -right-4 animate-pulse" />
+                  </div>
+                  <h3 className="font-display text-3xl">Sharpening pencils...</h3>
+                  <p className="text-muted-foreground">Gathering pedagogical insights from the ether.</p>
+                </div>
+              ) : (
+                <GuideViewer content={streamContent} isGenerating={isGenerating} />
+              )}
+            </main>
           </div>
         </div>
-
-        <div className="space-y-3">
-          <h1 className="text-5xl md:text-7xl font-display font-bold text-balance leading-tight">
-            Creating your <span className="text-gradient">app</span>
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto text-pretty">
-            Your application would be ready soon.
-          </p>
-        </div>
-
-        {HAS_TEMPLATE_DEMO ? (
-          <div className="max-w-5xl mx-auto text-left">
-            <TemplateDemo />
-          </div>
-        ) : (
-          <>
-            <div className="flex justify-center gap-4">
-              <Button
-                size="lg"
-                onClick={onPleaseWait}
-                className="btn-gradient px-8 py-4 text-lg font-semibold hover:-translate-y-0.5 transition-all duration-200"
-                aria-live="polite"
-              >
-                Please Wait
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div>
-                Time elapsed:{' '}
-                <span className="font-medium tabular-nums text-foreground">{formatted}</span>
-              </div>
-              <div>
-                Coins:{' '}
-                <span className="font-medium tabular-nums text-foreground">{coins}</span>
-              </div>
-            </div>
-
-            <div className="flex justify-center gap-2">
-              <Button variant="outline" size="sm" onClick={onReset}>
-                Reset
-              </Button>
-              <Button variant="outline" size="sm" onClick={onAddCoin}>
-                Add Coin
-              </Button>
-            </div>
-          </>
-        )}
       </div>
-
-      <footer className="absolute bottom-8 text-center text-muted-foreground/80">
-        <p>Powered by Cloudflare</p>
+      <footer className="py-12 border-t border-muted bg-white/50 backdrop-blur-sm mt-20">
+        <div className="max-w-7xl mx-auto px-4 text-center text-sm text-muted-foreground font-medium">
+          <p>© {new Date().getFullYear()} PracticeForge AI — Forged with Cloudflare Agents</p>
+        </div>
       </footer>
-
-      <Toaster richColors closeButton />
     </div>
-  )
+  );
 }

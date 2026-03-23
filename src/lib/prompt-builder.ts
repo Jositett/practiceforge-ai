@@ -1,11 +1,8 @@
-export function buildPedagogicalPrompt(topic: string, chapter: string, level: string, context?: string): string {
-  const contextInstruction = context 
-    ? `\nCRITICAL CONTEXT: Base your practice guide primarily on the following source material while adhering to the standard pedagogical structure:\n--- START SOURCE ---\n${context.slice(0, 4000)}\n--- END SOURCE ---\n`
-    : "";
+export function buildPedagogicalPrompt(topic: string, chapter: string, level: string): string {
   return `You are a Master Pedagogical Architect. Your goal is to forge a structured practice guide for:
 Topic: ${topic}
 Chapter: ${chapter}
-Target Level: ${level}${contextInstruction}
+Target Level: ${level}
 STRICT INSTRUCTION: Output your response in Markdown following exactly these 8 sections. Use clear headings (##) for each section.
 1. ## Title & Objectives
    - A creative title and 3 clear learning outcomes.
