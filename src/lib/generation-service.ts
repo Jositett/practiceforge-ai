@@ -24,20 +24,26 @@ export async function generateGuide(
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
       if (!reader) throw new Error('ReadableStream not available');
+      let buffer = '';
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(line => line.trim() !== '');
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        // Keep the last partial line in the buffer
+        buffer = lines.pop() || '';
         for (const line of lines) {
-          const message = line.replace(/^data: /, '');
-          if (message === '[DONE]') break;
-          try {
-            const parsed = JSON.parse(message);
-            const content = parsed.choices[0]?.delta?.content || '';
-            if (content) onChunk(content);
-          } catch (e) {
-            // Partial JSON or heartbeat
+          const trimmed = line.trim();
+          if (!trimmed || trimmed === 'data: [DONE]') continue;
+          if (trimmed.startsWith('data: ')) {
+            const jsonStr = trimmed.slice(6);
+            try {
+              const parsed = JSON.parse(jsonStr);
+              const content = parsed.choices[0]?.delta?.content || '';
+              if (content) onChunk(content);
+            } catch (e) {
+              console.warn('Failed to parse stream chunk:', jsonStr);
+            }
           }
         }
       }
