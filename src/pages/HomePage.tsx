@@ -3,10 +3,11 @@ import { ForgeForm } from '@/components/ForgeForm';
 import { GuideViewer, Hammer, Sparkles } from '@/components/GuideViewer';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { AuthModal } from '@/components/AuthModal';
+import { AboutModal } from '@/components/AboutModal';
 import { buildPedagogicalPrompt } from '@/lib/prompt-builder';
 import { generateGuide } from '@/lib/generation-service';
 import { authService } from '@/lib/auth-service';
-import { AlertCircle, Quote, LogOut, User } from 'lucide-react';
+import { AlertCircle, Quote, LogOut, User, Heart, Github, Coffee } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
@@ -66,6 +67,7 @@ export function HomePage() {
     <div className="min-h-screen bg-background relative selection:bg-primary/20 transition-colors duration-500 overflow-x-hidden">
       <Toaster richColors position="top-center" />
       <ThemeToggle />
+      <div className="fixed top-4 right-16 z-50"><AboutModal /></div>
       <AuthModal isOpen={isAuthModalOpen} onClose={() => {
         setIsAuthModalOpen(false);
         authService.getCurrentUser().then(setUser);
@@ -150,12 +152,26 @@ export function HomePage() {
           </div>
         </div>
       </div>
-      <footer className="py-8 border-t border-muted bg-background/80 mt-20">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground font-bold uppercase tracking-wider">
-          <p>© {new Date().getFullYear()} PracticeForge AI</p>
-          <div className="flex gap-6">
-            <span>Powered by Cloudflare Agents</span>
-            {user && <span>Active: {user.email}</span>}
+      <footer className="py-12 border-t border-muted bg-muted/5 mt-20">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-10">
+          <div className="space-y-4">
+            <h4 className="font-display text-xl text-primary">PracticeForge AI</h4>
+            <p className="text-xs text-muted-foreground leading-relaxed uppercase tracking-wider font-bold">
+              Built on the principles of structured pedagogy and the spirit of open curiosity.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <h4 className="font-display text-xl text-secondary">Support the Forge</h4>
+            <div className="flex gap-4">
+              <a href="https://github.com/sponsors" className="text-muted-foreground hover:text-foreground transition-colors"><Github size={20} /></a>
+              <a href="https://ko-fi.com" className="text-muted-foreground hover:text-foreground transition-colors"><Coffee size={20} /></a>
+              <span className="text-muted-foreground"><Heart size={20} className="fill-red-500 text-red-500" /></span>
+            </div>
+          </div>
+          <div className="flex flex-col justify-end text-xs text-muted-foreground font-bold uppercase tracking-widest gap-2">
+            <p>© {new Date().getFullYear()} PracticeForge AI</p>
+            <p>Powered by Cloudflare Agents</p>
+            {user && <p>Active Artisan: {user.email}</p>}
           </div>
         </div>
       </footer>

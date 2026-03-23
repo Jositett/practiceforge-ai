@@ -5,15 +5,21 @@ export function downloadMarkdown(content: string, filename: string = 'practice-f
 }
 function mdToHtml(md: string): string {
   return md
+    // Code blocks
+    .replace(/```(?:[a-z]+)?\n([\s\S]*?)\n```/gim, '<pre><code>$1</code></pre>')
+    // Headings
     .replace(/^# (.*$)/gim, '<h1>$1</h1>')
     .replace(/^## (.*$)/gim, '<h2>$1</h2>')
     .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    // Lists
     .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>')
-    .replace(/^\- (.*$)/gim, '<ul><li>$1</li></ul>')
+    .replace(/^- (.*$)/gim, '<ul><li>$1</li></ul>')
     .replace(/<\/ul>\s*<ul>/g, '')
+    // Inline styling
     .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
     .replace(/\*(.*)\*/gim, '<em>$1</em>')
     .replace(/`(.*?)`/g, '<code>$1</code>')
+    // Paragraphs
     .replace(/\n\n/g, '</p><p>')
     .replace(/\n/g, '<br/>');
 }
@@ -29,13 +35,13 @@ export function downloadHTML(markdownContent: string, filename: string = 'practi
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
     <style>
         :root {
             --primary: #F38020;
             --secondary: #764ba2;
             --background: #FDFBF7;
             --text: #1a1a1a;
+            --code-bg: #1e1e1e;
         }
         body {
             box-sizing: border-box;
@@ -73,6 +79,20 @@ export function downloadHTML(markdownContent: string, filename: string = 'practi
             padding: 0.2em 0.4em;
             border-radius: 4px;
             font-family: monospace;
+        }
+        pre {
+            background: var(--code-bg);
+            color: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            border: 2px solid #1a1a1a;
+            box-shadow: 4px 4px 0px 0px #1a1a1a;
+        }
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
         }
         ul { padding-left: 1.5rem; }
         li { margin-bottom: 0.5rem; }
