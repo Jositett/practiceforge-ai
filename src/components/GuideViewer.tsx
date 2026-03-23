@@ -21,7 +21,7 @@ export function GuideViewer({ content, isGenerating }: GuideViewerProps) {
     return (
       <div className="h-full flex flex-col items-center justify-center text-center p-12 opacity-40">
         <div className="w-24 h-24 mb-6 border-4 border-dashed border-muted-foreground rounded-full flex items-center justify-center">
-          <Hammer className="w-12 h-12" />
+          <Hammer size={48} className="text-muted-foreground" />
         </div>
         <h3 className="font-display text-3xl mb-2">The Anvil is Cold</h3>
         <p className="max-w-xs">Fill in the forge specs on the left to start striking the iron.</p>
@@ -58,7 +58,7 @@ export function GuideViewer({ content, isGenerating }: GuideViewerProps) {
       </div>
       <div className="flex-1 overflow-auto p-8">
         <Tabs defaultValue="rendered" className="h-full">
-          <TabsContent value="rendered" className="prose prose-slate prose-lg max-w-none focus-visible:outline-none">
+          <TabsContent value="rendered" className="prose prose-slate prose-lg max-w-none focus-visible:outline-none dark:prose-invert">
             <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
               {content}
             </ReactMarkdown>
@@ -73,7 +73,7 @@ export function GuideViewer({ content, isGenerating }: GuideViewerProps) {
             <textarea
               readOnly
               value={content}
-              className="w-full h-full min-h-[500px] p-4 font-mono text-sm bg-muted/20 border-2 border-dashed border-muted rounded-lg focus:outline-none resize-none"
+              className="w-full h-full min-h-[500px] p-4 font-mono text-sm bg-muted/20 border-2 border-dashed border-muted rounded-lg focus:outline-none resize-none dark:text-foreground"
             />
           </TabsContent>
         </Tabs>
@@ -81,13 +81,12 @@ export function GuideViewer({ content, isGenerating }: GuideViewerProps) {
     </div>
   );
 }
-// Minimal Hammer component for empty state
-function Hammer({ className }: { className?: string }) {
+function Hammer({ className, size = 24 }: { className?: string; size?: number }) {
   return (
-    <svg 
-      className={className} 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" height="24" viewBox="0 0 24 24" fill="none" 
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      width={size} height={size} viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
     >
       <path d="m15 12-8.37 8.37a1 1 0 1 1-1.41-1.41L13.59 10.59" />
@@ -98,12 +97,12 @@ function Hammer({ className }: { className?: string }) {
     </svg>
   );
 }
-function Sparkles({ className }: { className?: string }) {
+function Sparkles({ className, size = 24 }: { className?: string; size?: number }) {
   return (
-    <svg 
-      className={className} 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" height="24" viewBox="0 0 24 24" fill="none" 
+    <svg
+      className={className}
+      xmlns="http://www.w3.org/2000/svg"
+      width={size} height={size} viewBox="0 0 24 24" fill="none"
       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
     >
       <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />

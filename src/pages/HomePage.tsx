@@ -4,7 +4,7 @@ import { GuideViewer } from '@/components/GuideViewer';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { buildPedagogicalPrompt } from '@/lib/prompt-builder';
 import { generateGuide } from '@/lib/generation-service';
-import { Hammer, Sparkles, AlertCircle } from 'lucide-react';
+import { Hammer, Sparkles, AlertCircle, Quote } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 import confetti from 'canvas-confetti';
 export function HomePage() {
@@ -13,11 +13,14 @@ export function HomePage() {
   const [level, setLevel] = useState('Beginner');
   const [isGenerating, setIsGenerating] = useState(false);
   const [streamContent, setStreamContent] = useState('');
+  // Document context state
+  const [documentText, setDocumentText] = useState('');
+  const [fileName, setFileName] = useState<string | null>(null);
   const handleForge = async () => {
     if (!topic || !chapter) return;
     setIsGenerating(true);
     setStreamContent('');
-    const prompt = buildPedagogicalPrompt(topic, chapter, level);
+    const prompt = buildPedagogicalPrompt(topic, chapter, level, documentText);
     try {
       await generateGuide(prompt, (chunk) => {
         setStreamContent(prev => prev + chunk);
@@ -36,6 +39,10 @@ export function HomePage() {
       setIsGenerating(false);
     }
   };
+  const handleFileParsed = (text: string, name: string | null) => {
+    setDocumentText(text);
+    setFileName(name);
+  };
   return (
     <div className="min-h-screen bg-background relative selection:bg-primary/20">
       <Toaster richColors />
@@ -45,7 +52,7 @@ export function HomePage() {
           {/* Header */}
           <header className="mb-12 text-center lg:text-left flex flex-col lg:flex-row items-center gap-6">
             <div className="w-20 h-20 bg-primary rounded-2xl flex items-center justify-center shadow-illustrative rotate-3 border-2 border-foreground shrink-0">
-              <Hammer className="text-white w-10 h-10 -rotate-12" />
+              <Hammer className="text-white w-10 h-10 -rotate-12" size={40} />
             </div>
             <div>
               <h1 className="text-5xl md:text-6xl font-display text-foreground tracking-tight">
@@ -60,7 +67,7 @@ export function HomePage() {
           <div className="flex flex-col lg:flex-row gap-10">
             {/* Sidebar Form */}
             <aside className="w-full lg:w-96 flex-shrink-0">
-              <div className="sticky top-12">
+              <div className="sticky top-12 space-y-6">
                 <ForgeForm
                   topic={topic}
                   setTopic={setTopic}
@@ -70,8 +77,20 @@ export function HomePage() {
                   setLevel={setLevel}
                   onForge={handleForge}
                   isGenerating={isGenerating}
+                  onFileParsed={handleFileParsed}
+                  fileName={fileName}
                 />
-                <div className="mt-8 p-4 border-2 border-dashed border-muted rounded-xl bg-muted/10">
+                {documentText && (
+                  <div className="sketchy-card bg-muted/20 p-4 border-dashed border-2 animate-in slide-in-from-left duration-300">
+                    <div className="flex items-center gap-2 mb-2 text-secondary font-bold text-xs uppercase tracking-wider">
+                      <Quote size={12} /> Source Material Detected
+                    </div>
+                    <p className="text-xs text-muted-foreground line-clamp-3 italic">
+                      "{documentText.slice(0, 300)}..."
+                    </p>
+                  </div>
+                )}
+                <div className="p-4 border-2 border-dashed border-muted rounded-xl bg-muted/10">
                   <h4 className="flex items-center gap-2 font-bold text-sm mb-2">
                     <AlertCircle size={14} className="text-primary" /> Note on Generation
                   </h4>
@@ -86,8 +105,8 @@ export function HomePage() {
               {isGenerating && !streamContent ? (
                 <div className="sketchy-card h-full flex flex-col items-center justify-center space-y-4 py-32">
                   <div className="relative">
-                    <Hammer className="w-16 h-16 text-primary animate-bounce" />
-                    <Sparkles className="w-8 h-8 text-secondary absolute -top-4 -right-4 animate-pulse" />
+                    <Hammer className="w-16 h-16 text-primary animate-bounce" size={64} />
+                    <Sparkles className="w-8 h-8 text-secondary absolute -top-4 -right-4 animate-pulse" size={32} />
                   </div>
                   <h3 className="font-display text-3xl">Sharpening pencils...</h3>
                   <p className="text-muted-foreground">Gathering pedagogical insights from the ether.</p>

@@ -16,10 +16,25 @@
     --input: 20 10% 90%;
     --ring: 25 90% 54%;
     --radius: 0.75rem;
+    --shadow-color: 0 0% 10%;
+  }
+  .dark {
+    --background: 20 10% 10%;
+    --foreground: 40 33% 98%;
+    --primary: 25 90% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 265 60% 70%;
+    --secondary-foreground: 20 10% 10%;
+    --muted: 20 10% 20%;
+    --muted-foreground: 40 10% 70%;
+    --border: 20 10% 30%;
+    --input: 20 10% 25%;
+    --ring: 25 90% 54%;
+    --shadow-color: 0 0% 100%;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    background-image: radial-gradient(#e5e7eb 0.5px, transparent 0.5px);
+    @apply bg-background text-foreground font-sans antialiased transition-colors duration-300;
+    background-image: radial-gradient(rgba(128, 128, 128, 0.15) 0.5px, transparent 0.5px);
     background-size: 24px 24px;
   }
 }
@@ -29,24 +44,23 @@
     border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
   }
   .sketchy-card {
-    @apply bg-white p-6 transition-transform duration-200;
-    border: 2px solid #1a1a1a;
+    @apply bg-white dark:bg-zinc-900 p-6 transition-all duration-200 border-2 border-foreground;
     border-radius: 2% 98% 2% 98% / 98% 2% 98% 2%;
-    box-shadow: 6px 6px 0px 0px #1a1a1a;
+    box-shadow: 6px 6px 0px 0px hsl(var(--shadow-color) / 1);
   }
   .sketchy-card:hover {
     @apply -translate-y-1 -translate-x-1;
-    box-shadow: 10px 10px 0px 0px #1a1a1a;
+    box-shadow: 10px 10px 0px 0px hsl(var(--shadow-color) / 1);
   }
   .illustrative-button {
     @apply font-bold py-2 px-6 transition-all active:translate-y-1 active:translate-x-1;
-    border: 2px solid #1a1a1a;
+    border: 2px solid currentColor;
     border-radius: 4px 12px 4px 12px;
-    box-shadow: 4px 4px 0px 0px #1a1a1a;
+    box-shadow: 4px 4px 0px 0px hsl(var(--shadow-color) / 1);
   }
   .illustrative-button:hover {
     @apply -translate-y-0.5 -translate-x-0.5;
-    box-shadow: 6px 6px 0px 0px #1a1a1a;
+    box-shadow: 6px 6px 0px 0px hsl(var(--shadow-color) / 1);
   }
   .font-display {
     font-family: 'Fredericka the Great', cursive;
@@ -57,4 +71,16 @@
 }
 .prose code {
   @apply bg-muted px-1 py-0.5 rounded text-primary font-mono;
+}
+.dark .prose {
+  @apply prose-invert;
+}
+/* Animations */
+@keyframes forge-pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.forging-animation {
+  animation: forge-pulse 2s infinite ease-in-out;
 }
