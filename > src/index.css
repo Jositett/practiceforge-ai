@@ -1,0 +1,25 @@
+/* Syntax Highlighting (hljs) Minimal Theme */
+.prose pre {
+  @apply bg-zinc-950 text-zinc-100 border-2 border-foreground/10 rounded-xl p-4 overflow-x-auto my-6;
+  box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.1);
+}
+.prose .hljs-keyword,
+.prose .hljs-selector-tag { @apply text-primary font-bold; }
+.prose .hljs-string,
+.prose .hljs-doctag { @apply text-emerald-400; }
+.prose .hljs-title,
+.prose .hljs-section,
+.prose .hljs-selector-id { @apply text-secondary font-bold; }
+.prose .hljs-comment { @apply text-zinc-500 italic; }
+.prose .hljs-number,
+.prose .hljs-literal { @apply text-orange-400; }
+.prose ul > li {
+  @apply relative pl-2;
+}
+.prose ul > li::before {
+  content: "•";
+  @apply text-primary font-bold absolute -left-4;
+}
+.prose h2 {
+  @apply border-b-2 border-dashed border-primary/20 pb-2 mb-6 mt-10;
+}

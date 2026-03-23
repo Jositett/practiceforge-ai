@@ -77,18 +77,7 @@ function updateWranglerJsonc() {
 }
 
 function runSetupCommands() {
-    const commands = [
-    "bun add react-markdown@^9.0.1",
-    "bun add remark-gfm@^4.0.0",
-    "bun add rehype-highlight@^7.0.0",
-    "bun add file-saver@^2.0.5",
-    "bun add @tailwindcss/typography@^0.5.13",
-    "bun add canvas-confetti@^1.9.3",
-    "bun install react-markdown remark-gfm rehype-highlight file-saver canvas-confetti @tailwindcss/typography",
-    "bun add pdfjs-dist mammoth",
-    "bun install pdfjs-dist mammoth",
-    "bun add zod react-hook-form @hookform/resolvers"
-];
+    const commands = [];
     
     if (commands.length === 0) {
         console.log('⊘ No setup commands to run');
