@@ -38,6 +38,20 @@
     background-size: 24px 24px;
   }
 }
+/* Custom Themed Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-muted/30 rounded-full;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-primary/40 hover:bg-primary/60 rounded-full border-2 border-transparent bg-clip-padding transition-colors;
+}
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 hover:bg-primary/40;
+}
 @layer components {
   .sketchy-border {
     @apply border-2 border-foreground relative;
@@ -53,12 +67,12 @@
     box-shadow: 10px 10px 0px 0px hsl(var(--shadow-color) / 1);
   }
   .illustrative-button {
-    @apply font-bold py-2 px-6 transition-all active:translate-y-1 active:translate-x-1 duration-200;
+    @apply font-bold py-2 px-6 transition-all active:translate-y-1 active:translate-x-1 duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
     border: 2px solid currentColor;
     border-radius: 4px 12px 4px 12px;
     box-shadow: 4px 4px 0px 0px hsl(var(--shadow-color) / 1);
   }
-  .illustrative-button:hover {
+  .illustrative-button:hover:not(:disabled) {
     @apply -translate-y-0.5 -translate-x-0.5;
     box-shadow: 6px 6px 0px 0px hsl(var(--shadow-color) / 1);
   }
@@ -81,7 +95,6 @@
 .dark .prose code {
   @apply bg-zinc-800 text-primary-foreground border-zinc-700;
 }
-/* Animations */
 @keyframes forge-pulse {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.02); opacity: 0.9; }
