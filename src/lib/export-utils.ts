@@ -1,11 +1,24 @@
 import { saveAs } from 'file-saver';
-export function downloadMarkdown(content: string, filename: string = 'practice-guide.md') {
+export function downloadMarkdown(content: string, filename: string = 'practice-forge-guide.md') {
   const blob = new Blob([content], { type: 'text/markdown;charset=utf-8' });
   saveAs(blob, filename);
 }
-export function downloadHTML(markdownContent: string, filename: string = 'practice-guide.html') {
-  // Simple conversion of basic MD to HTML for the export file
-  // In a real app we might use a library, but for portability we wrap it in a styled container
+function mdToHtml(md: string): string {
+  return md
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^\* (.*$)/gim, '<ul><li>$1</li></ul>')
+    .replace(/^\- (.*$)/gim, '<ul><li>$1</li></ul>')
+    .replace(/<\/ul>\s*<ul>/g, '')
+    .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+    .replace(/\*(.*)\*/gim, '<em>$1</em>')
+    .replace(/`(.*?)`/g, '<code>$1</code>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br/>');
+}
+export function downloadHTML(markdownContent: string, filename: string = 'practice-forge-guide.html') {
+  const htmlBody = mdToHtml(markdownContent);
   const html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -15,58 +28,80 @@ export function downloadHTML(markdownContent: string, filename: string = 'practi
     <title>PracticeForge Guide</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css">
     <style>
         :root {
             --primary: #F38020;
             --secondary: #764ba2;
             --background: #FDFBF7;
+            --text: #1a1a1a;
         }
-        body { 
-            box-sizing: border-box; 
-            min-width: 200px; 
-            max-width: 980px; 
-            margin: 0 auto; 
-            padding: 45px;
+        body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
             background-color: var(--background);
             font-family: 'Inter', sans-serif;
+            color: var(--text);
+            line-height: 1.6;
         }
-        .markdown-body {
-            background-color: transparent !important;
-            font-family: 'Inter', sans-serif;
-        }
-        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
-            font-family: 'Fredericka the Great', cursive;
-            color: var(--secondary);
-            border-bottom: 2px dashed #eee;
-        }
-        .markdown-body code {
-            color: var(--primary);
-            background-color: rgba(243, 128, 32, 0.1);
-        }
-        @media (max-width: 767px) { body { padding: 15px; } }
         .sketchy-frame {
             border: 3px solid #1a1a1a;
-            padding: 2rem;
+            padding: 3rem;
             border-radius: 2% 98% 2% 98% / 98% 2% 98% 2%;
             background: white;
-            box-shadow: 8px 8px 0px 0px #1a1a1a;
+            box-shadow: 12px 12px 0px 0px #1a1a1a;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            border-bottom: 3px double #1a1a1a;
+            padding-bottom: 1.5rem;
+        }
+        h1, h2, h3 {
+            font-family: 'Fredericka the Great', cursive;
+            color: var(--secondary);
+            margin-top: 1.5em;
+        }
+        h1 { font-size: 2.5rem; color: var(--primary); margin-top: 0; }
+        code {
+            color: var(--primary);
+            background-color: rgba(243, 128, 32, 0.08);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        ul { padding-left: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        footer {
+            margin-top: 4rem;
+            font-size: 0.85rem;
+            text-align: center;
+            opacity: 0.5;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        @media (max-width: 767px) {
+            body { padding: 20px; }
+            .sketchy-frame { padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
     <div class="sketchy-frame">
-        <header style="text-align: center; margin-bottom: 2rem; border-bottom: 2px solid #1a1a1a; padding-bottom: 1rem;">
-            <h1 style="font-family: 'Fredericka the Great', cursive; color: var(--primary); margin: 0;">PracticeForge AI</h1>
-            <p style="margin: 0.5rem 0 0 0; font-style: italic;">Your custom pedagogical guide</p>
+        <header>
+            <h1>PracticeForge AI</h1>
+            <p><em>Forged on ${new Date().toLocaleDateString()}</em></p>
         </header>
-        <article class="markdown-body">
-            ${markdownContent.replace(/\n/g, '<br/>')} 
-            <!-- Note: Simple replace for export purposes; usually handled by a proper MD-to-HTML parser -->
+        <article>
+            ${htmlBody}
         </article>
-        <footer style="margin-top: 3rem; font-size: 0.8rem; text-align: center; opacity: 0.6;">
-            Generated by PracticeForge AI • ${new Date().toLocaleDateString()}
+        <footer>
+            Generated by PracticeForge AI • Structured Mastery
         </footer>
     </div>
 </body>

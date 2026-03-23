@@ -28,6 +28,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     // Auth Routes
     app.post('/api/auth/signup', async (c) => {
         const { email, password } = await c.req.json();
+        if (!email?.trim() || !password?.trim()) return c.json({ success: false, error: 'Email and password are required' }, 400);
         if (!email || !password) return c.json({ success: false, error: 'Missing fields' }, 400);
         const controller = getAppController(c.env);
         // Simple hash (for production use a real crypto implementation)
@@ -37,6 +38,7 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
     });
     app.post('/api/auth/login', async (c) => {
         const { email, password } = await c.req.json();
+        if (!email?.trim() || !password?.trim()) return c.json({ success: false, error: 'Credentials required' }, 400);
         const controller = getAppController(c.env);
         const passwordHash = btoa(password);
         const result = await controller.login(email, passwordHash);
@@ -66,8 +68,11 @@ export function userRoutes(app: Hono<{ Bindings: Env }>) {
             const body = await c.req.json().catch(() => ({}));
             const { title, sessionId: providedSessionId, firstMessage, userId } = body;
             const sessionId = providedSessionId || crypto.randomUUID();
+            
+            // Try to get userId from header if not in body
+            const authSessionId = c.req.header('Authorization')?.split(' ')[1];
             let sessionTitle = title || `Chat ${new Date().toLocaleDateString()}`;
-            await registerSession(c.env, sessionId, sessionTitle);
+            await getAppController(c.env).addSession(sessionId, sessionTitle, userId || authSessionId);
             return c.json({ success: true, data: { sessionId, title: sessionTitle } });
         } catch (error) {
             return c.json({ success: false, error: 'Failed to create session' }, 500);

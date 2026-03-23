@@ -29,7 +29,9 @@ export function HomePage() {
     checkAuth();
   }, []);
   const handleForge = async () => {
-    if (!user) {
+    // Fresh check for user state
+    const currentUser = await authService.getCurrentUser();
+    if (!currentUser) {
       setIsAuthModalOpen(true);
       toast.info('Please log in to forge guides');
       return;
@@ -102,7 +104,7 @@ export function HomePage() {
             </div>
           </header>
           {/* Main Layout */}
-          <div className="flex flex-col lg:flex-row gap-10 items-start">
+          <div className={`flex flex-col lg:flex-row gap-10 items-start ${isGenerating ? 'max-md:items-center' : ''}`}>
             <aside className="w-full lg:w-96 flex-shrink-0 space-y-6">
               <ForgeForm
                 topic={topic} setTopic={setTopic}
@@ -132,10 +134,10 @@ export function HomePage() {
                 </p>
               </div>
             </aside>
-            <main className="flex-1 w-full min-h-[600px] lg:h-[calc(100vh-200px)] flex flex-col">
+            <main className={`flex-1 w-full min-h-[600px] lg:h-[calc(100vh-200px)] flex flex-col transition-all duration-500 ${isGenerating && !streamContent ? 'opacity-90 scale-[0.99]' : 'opacity-100 scale-100'}`}>
               {isGenerating && !streamContent ? (
                 <div className="sketchy-card h-full flex flex-col items-center justify-center space-y-6 py-32 bg-white/50">
-                  <div className="relative">
+                  <div className="relative forging-animation">
                     <Hammer className="w-20 h-20 text-primary animate-bounce" size={80} />
                     <Sparkles className="w-10 h-10 text-secondary absolute -top-6 -right-6 animate-pulse" size={40} />
                   </div>
