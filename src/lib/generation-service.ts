@@ -27,8 +27,10 @@ export async function generateGuide(
       let buffer = '';
       while (true) {
         const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
+        // Finalize decoding with done signal to avoid potential errors
+        if (value) {
+            buffer += decoder.decode(value, { stream: !done });
+        }
         const lines = buffer.split('\n');
         // Keep the last partial line in the buffer
         buffer = lines.pop() || '';
@@ -46,6 +48,7 @@ export async function generateGuide(
             }
           }
         }
+        if (done) break;
       }
       return;
     } catch (error) {

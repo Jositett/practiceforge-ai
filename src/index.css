@@ -36,6 +36,8 @@
     @apply bg-background text-foreground font-sans antialiased transition-colors duration-500;
     background-image: radial-gradient(rgba(128, 128, 128, 0.1) 0.5px, transparent 0.5px);
     background-size: 24px 24px;
+    max-width: 2560px;
+    margin: 0 auto;
   }
 }
 /* Custom Themed Scrollbars */
@@ -49,16 +51,13 @@
 ::-webkit-scrollbar-thumb {
   @apply bg-primary/40 hover:bg-primary/60 rounded-full border-2 border-transparent bg-clip-padding transition-colors;
 }
-.dark ::-webkit-scrollbar-thumb {
-  @apply bg-primary/20 hover:bg-primary/40;
-}
 @layer components {
   .sketchy-border {
     @apply border-2 border-foreground relative;
     border-radius: 255px 15px 225px 15px/15px 225px 15px 255px;
   }
   .sketchy-card {
-    @apply bg-white dark:bg-zinc-900 p-6 transition-all duration-300 border-2 border-foreground;
+    @apply bg-white dark:bg-zinc-900 p-6 border-2 border-foreground transition-all duration-300 ease-out;
     border-radius: 2% 98% 2% 98% / 98% 2% 98% 2%;
     box-shadow: 6px 6px 0px 0px hsl(var(--shadow-color) / 1);
   }
@@ -86,14 +85,25 @@
 .prose h1, .prose h2, .prose h3 {
   @apply font-display text-secondary tracking-wide;
 }
+.prose h2 {
+  @apply border-b-2 border-dashed border-primary/20 pb-2 mb-6 mt-10;
+}
 .prose code {
   @apply bg-muted/50 px-1.5 py-0.5 rounded text-primary font-mono font-bold border border-primary/20;
 }
-.dark .prose {
-  @apply prose-invert;
+.prose pre {
+  @apply bg-zinc-950 text-zinc-100 border-2 border-foreground/10 rounded-xl p-4 overflow-x-auto my-6;
+  box-shadow: 4px 4px 0px 0px rgba(0,0,0,0.1);
 }
-.dark .prose code {
-  @apply bg-zinc-800 text-primary-foreground border-zinc-700;
+.prose pre code {
+  @apply bg-transparent text-inherit p-0 border-none font-normal text-sm;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+.prose ul > li::before {
+  content: "•";
+  @apply text-primary font-bold absolute -left-4;
 }
 @keyframes forge-pulse {
   0% { transform: scale(1); opacity: 1; }

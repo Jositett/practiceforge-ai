@@ -30,7 +30,6 @@ export function HomePage() {
     checkAuth();
   }, []);
   const handleForge = async () => {
-    // Fresh check for user state
     const currentUser = await authService.getCurrentUser();
     if (!currentUser) {
       setIsAuthModalOpen(true);
@@ -38,8 +37,9 @@ export function HomePage() {
       return;
     }
     if (!topic || !chapter) return;
-    setIsGenerating(true);
+    // Clear previous content for a clean transition
     setStreamContent('');
+    setIsGenerating(true);
     const prompt = buildPedagogicalPrompt(topic, chapter, level, documentText);
     try {
       await generateGuide(prompt, (chunk) => {
@@ -66,8 +66,10 @@ export function HomePage() {
   return (
     <div className="min-h-screen bg-background relative selection:bg-primary/20 transition-colors duration-500 overflow-x-hidden">
       <Toaster richColors position="top-center" />
-      <ThemeToggle />
-      <div className="fixed top-4 right-16 z-50"><AboutModal /></div>
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-2 px-2">
+        <AboutModal />
+        <ThemeToggle className="static" />
+      </div>
       <AuthModal isOpen={isAuthModalOpen} onClose={() => {
         setIsAuthModalOpen(false);
         authService.getCurrentUser().then(setUser);
@@ -106,7 +108,7 @@ export function HomePage() {
             </div>
           </header>
           {/* Main Layout */}
-          <div className={`flex flex-col lg:flex-row gap-10 items-start ${isGenerating ? 'max-md:items-center' : ''}`}>
+          <div className="flex flex-col lg:flex-row gap-10 items-start">
             <aside className="w-full lg:w-96 flex-shrink-0 space-y-6">
               <ForgeForm
                 topic={topic} setTopic={setTopic}
@@ -132,18 +134,18 @@ export function HomePage() {
                   <AlertCircle size={16} className="text-primary" /> Forging Limits
                 </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  {user ? "You have premium forging active." : "Sign in to save guides and bypass standard limits."}
+                  {user ? "Premium forging status active." : "Sign in to stoke the furnace and bypass limits."}
                 </p>
               </div>
             </aside>
-            <main className={`flex-1 w-full min-h-[600px] lg:h-[calc(100vh-200px)] flex flex-col transition-all duration-500 ${isGenerating && !streamContent ? 'opacity-90 scale-[0.99]' : 'opacity-100 scale-100'}`}>
+            <main className={`flex-1 w-full min-h-[600px] lg:h-[calc(100vh-250px)] flex flex-col transition-all duration-500 ${isGenerating && !streamContent ? 'opacity-90 scale-[0.99]' : 'opacity-100 scale-100'}`}>
               {isGenerating && !streamContent ? (
                 <div className="sketchy-card h-full flex flex-col items-center justify-center space-y-6 py-32 bg-white/50">
                   <div className="relative forging-animation">
                     <Hammer className="w-20 h-20 text-primary animate-bounce" size={80} />
                     <Sparkles className="w-10 h-10 text-secondary absolute -top-6 -right-6 animate-pulse" size={40} />
                   </div>
-                  <h3 className="font-display text-4xl">Sharpening pencils...</h3>
+                  <h3 className="font-display text-4xl">Striking the iron...</h3>
                 </div>
               ) : (
                 <GuideViewer content={streamContent} isGenerating={isGenerating} />
@@ -157,21 +159,20 @@ export function HomePage() {
           <div className="space-y-4">
             <h4 className="font-display text-xl text-primary">PracticeForge AI</h4>
             <p className="text-xs text-muted-foreground leading-relaxed uppercase tracking-wider font-bold">
-              Built on the principles of structured pedagogy and the spirit of open curiosity.
+              Built on the principles of structured pedagogy and the spirit of curiosity.
             </p>
           </div>
           <div className="space-y-4">
             <h4 className="font-display text-xl text-secondary">Support the Forge</h4>
             <div className="flex gap-4">
-              <a href="https://github.com/sponsors" className="text-muted-foreground hover:text-foreground transition-colors"><Github size={20} /></a>
-              <a href="https://ko-fi.com" className="text-muted-foreground hover:text-foreground transition-colors"><Coffee size={20} /></a>
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors"><Github size={20} /></a>
+              <a href="https://ko-fi.com" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-colors"><Coffee size={20} /></a>
               <span className="text-muted-foreground"><Heart size={20} className="fill-red-500 text-red-500" /></span>
             </div>
           </div>
           <div className="flex flex-col justify-end text-xs text-muted-foreground font-bold uppercase tracking-widest gap-2">
             <p>© {new Date().getFullYear()} PracticeForge AI</p>
             <p>Powered by Cloudflare Agents</p>
-            {user && <p>Active Artisan: {user.email}</p>}
           </div>
         </div>
       </footer>
